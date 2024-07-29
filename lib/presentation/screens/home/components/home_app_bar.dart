@@ -8,14 +8,10 @@ import '../../../utils/strings.dart';
 
 class HomeAppBar extends StatefulWidget {
   final GlobalKey<SliderDrawerState> drawerKey;
-  final TextTheme textTheme;
   final Function deleteAllClick;
 
   const HomeAppBar(
-      {super.key,
-      required this.drawerKey,
-      required this.textTheme,
-      required this.deleteAllClick});
+      {super.key, required this.drawerKey, required this.deleteAllClick});
 
   @override
   State<HomeAppBar> createState() => _HomeAppBarState();
@@ -56,6 +52,7 @@ class _HomeAppBarState extends State<HomeAppBar>
 
   @override
   Widget build(BuildContext context) {
+    TextTheme textTheme = Theme.of(context).textTheme;
     return Container(
       padding: MediaQuery.of(context).padding,
       width: double.infinity,
@@ -117,12 +114,12 @@ class _HomeAppBarState extends State<HomeAppBar>
                 children: [
                   Text(
                     AppStr.mainTitle,
-                    style: widget.textTheme.displayMedium,
+                    style: textTheme.displayMedium,
                   ),
                   const Gap(3),
                   Text(
                     "1 of 3 tasks",
-                    style: widget.textTheme.titleMedium,
+                    style: textTheme.titleMedium,
                   )
                 ],
               ),

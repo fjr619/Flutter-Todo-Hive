@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
 import 'package:flutter_todo_hive/presentation/screens/home/components/home_app_bar.dart';
 import 'package:flutter_todo_hive/presentation/screens/home/components/home_content.dart';
+import 'package:flutter_todo_hive/presentation/screens/home/components/home_drawer.dart';
 
 import 'components/fab.dart';
 
@@ -21,8 +22,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    TextTheme textTheme = Theme.of(context).textTheme;
-
     return Scaffold(
       backgroundColor: Colors.white,
       floatingActionButton: const FAB(),
@@ -32,11 +31,11 @@ class _HomeScreenState extends State<HomeScreen> {
         animationDuration: 500,
 
         ///Drawer
-        slider: Container(color: Colors.red),
+        slider: HomeDrawer(),
 
+        /// Custom appbar
         appBar: HomeAppBar(
           drawerKey: drawerKey,
-          textTheme: textTheme,
           deleteAllClick: () {
             log("delete all tasks");
           },
