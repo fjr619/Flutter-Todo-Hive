@@ -1,6 +1,8 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_todo_hive/presentation/screens/task/task_screen.dart';
 
 import '../../../utils/colors.dart';
 
@@ -15,8 +17,13 @@ class FAB extends StatelessWidget {
       backgroundColor: AppColors.primaryColor,
       elevation: 20,
       onPressed: () {
-        //navigate to task view
-        log("task view");
+        //TODO pakai go router
+        Navigator.push(
+          context,
+          CupertinoPageRoute(
+            builder: (context) => const TaskScreen(),
+          ),
+        );
       },
       child: const Icon(
         Icons.add,
