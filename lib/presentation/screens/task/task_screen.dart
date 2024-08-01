@@ -5,7 +5,6 @@ import 'package:flutter_cupertino_date_picker_fork/flutter_cupertino_date_picker
 import 'package:flutter_todo_hive/presentation/screens/task/components/date_time_selection.dart';
 import 'package:flutter_todo_hive/presentation/utils/colors.dart';
 import 'package:flutter_todo_hive/presentation/utils/strings.dart';
-import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
 class TaskScreen extends StatefulWidget {
