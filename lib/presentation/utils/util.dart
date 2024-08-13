@@ -78,3 +78,27 @@ dynamic deleteAllTask(
       barrierDismissible: false,
       noImage: true);
 }
+
+dynamic deleteTaskDialog(
+    {required BuildContext context,
+    required Function() onCancel,
+    required Function() onConfirm}) {
+  return PanaraConfirmDialog.showAnimatedFade(context,
+      title: AppStr.areYouSure,
+      message:
+          "Do You really want to delete this task?",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      // onTapCancel: () {
+      //   Navigator.pop(context);
+      // },
+      // onTapConfirm: () {
+      //   BaseWidget.of(context).dataStore.box.clear();
+      //   Navigator.pop(context);
+      // },
+      onTapCancel: onCancel,
+      onTapConfirm: onConfirm,
+      panaraDialogType: PanaraDialogType.error,
+      barrierDismissible: false,
+      noImage: true);
+}

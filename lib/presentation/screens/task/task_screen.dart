@@ -33,6 +33,7 @@ class _TaskScreenState extends State<TaskScreen> {
   @override
   void initState() {
     super.initState();
+    log("task id ${widget.task?.id}");
     titleTaskController.text = widget.task?.title ?? "";
     descriptionTaskController.text = widget.task?.subTitle ?? "";
 
@@ -65,7 +66,12 @@ class _TaskScreenState extends State<TaskScreen> {
   /// Delete Selected Task
   void deleteTask() {
     if (widget.task != null) {
-      taskRepository.deleteTask(widget.task!).catchError((error) {
+      taskRepository
+          .deleteTask(widget.task!)
+          .then(
+            (_) => Navigator.of(context).pop(),
+          )
+          .catchError((error) {
         generalToast(context, error.toString());
       });
     }
@@ -84,6 +90,9 @@ class _TaskScreenState extends State<TaskScreen> {
       }).catchError((error) {
         generalToast(context, error.toString());
       });
+    } else if (titleTaskController.text.isEmpty &&
+        descriptionTaskController.text.isEmpty) {
+      emptyFieldsWarning(context);
     } else {
       Task task = Task(
           id: "",
@@ -307,7 +316,16 @@ class _TaskScreenState extends State<TaskScreen> {
                       onPressed: () {
                         FocusManager.instance.primaryFocus?.unfocus();
                         log('on delete');
-                        deleteTask();
+                        deleteTaskDialog(
+                          context: context,
+                          onCancel: () {
+                            Navigator.of(context).pop();
+                          },
+                          onConfirm: () {
+                            deleteTask();
+                            Navigator.of(context).pop();
+                          },
+                        );
                       },
                       label: const Text(
                         AppStr.deleteTask,

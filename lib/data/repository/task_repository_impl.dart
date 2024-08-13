@@ -8,12 +8,11 @@ import 'package:hive_flutter/adapters.dart';
 
 class TaskRepositoryImpl implements TaskRepository {
   final HiveDataStore _hiveDataStore;
-  final Box<TaskEntity> _taskEntityBox;
   late ValueListenable<Box<TaskEntity>> _taskListenable;
   final ValueNotifier<List<Task>> tasksNotifier = ValueNotifier([]);
 
-  TaskRepositoryImpl(this._hiveDataStore, this._taskEntityBox) {
-    _taskListenable = _taskEntityBox.listenable();
+  TaskRepositoryImpl(this._hiveDataStore) {
+    _taskListenable = _hiveDataStore.box.listenable();
     _taskListenable.addListener(_onTasksChanged);
     _loadInitialTasks();
   }
@@ -63,6 +62,6 @@ class TaskRepositoryImpl implements TaskRepository {
 
   @override
   Future<void> deleteAllTask() async {
-    await _taskEntityBox.clear();
+    await _hiveDataStore.deleteAllTask();
   }
 }
