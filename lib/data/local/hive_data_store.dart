@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_todo_hive/data/local/entities/task_entity.dart';
+import 'package:flutter_todo_hive/data/mapper/task_mapper.dart';
 import 'package:hive_flutter/adapters.dart';
 
 /// All the [CRUD] operation method for Hive DB
@@ -29,9 +30,13 @@ class HiveDataStore {
     await task.delete();
   }
 
+  Future<List<TaskEntity>> getAllTasks() async {
+    return box.values.toList();
+  }
+
   /// Listen to Box Changes
   /// using this method we will listen to box changes and updates the UI accordingly
-  ValueListenable<Box> listenToTask() {
+  ValueListenable<Box<TaskEntity>> listenToTask() {
     return box.listenable();
   }
 }

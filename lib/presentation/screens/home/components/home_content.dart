@@ -8,11 +8,11 @@ import '../../../utils/strings.dart';
 import 'task_list_item.dart';
 
 class HomeContent extends StatelessWidget {
-  final List<int> datas;
-  final Function(int data) onSwipeDismiss;
+  final List<Task> tasks;
+  final Function(Task task) onSwipeDismiss;
 
   const HomeContent(
-      {required this.datas, required this.onSwipeDismiss, super.key});
+      {required this.tasks, required this.onSwipeDismiss, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +35,7 @@ class HomeContent extends StatelessWidget {
             child: SizedBox(
               width: double.infinity,
               height: double.infinity,
-              child: datas.isNotEmpty ? _listNotEmpty() : _listEmpty(),
+              child: tasks.isNotEmpty ? _listNotEmpty() : _listEmpty(),
             ),
           ),
         ],
@@ -55,7 +55,7 @@ class HomeContent extends StatelessWidget {
               width: 200,
               height: 200,
               child: Lottie.asset('assets/lottie/1.json',
-                  animate: datas.isNotEmpty ? false : true),
+                  animate: tasks.isNotEmpty ? false : true),
             ),
           ),
           FadeInUp(from: 30, child: const Text(AppStr.doneAllTask))
@@ -68,7 +68,7 @@ class HomeContent extends StatelessWidget {
   Widget _listNotEmpty() {
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
-      itemCount: datas.length,
+      itemCount: tasks.length,
       scrollDirection: Axis.vertical,
       itemBuilder: (context, index) {
         return Dismissible(
@@ -90,17 +90,11 @@ class HomeContent extends StatelessWidget {
             ],
           ),
           onDismissed: (direction) {
-            onSwipeDismiss(datas[index]);
+            onSwipeDismiss(tasks[index]);
           },
           key: UniqueKey(),
           child: TaskListItem(
-            task: Task(
-                id: "2",
-                title: "Home Task",
-                subTitle: "Cleaning the room",
-                createdAtTime: DateTime.now(),
-                createdAtDate: DateTime.now(),
-                isCompleted: false),
+            task: tasks[index],
           ),
         );
       },

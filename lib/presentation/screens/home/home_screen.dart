@@ -2,6 +2,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
+import 'package:flutter_todo_hive/di/di.dart';
+import 'package:flutter_todo_hive/domain/model/task.dart';
+import 'package:flutter_todo_hive/domain/repository/task_repository.dart';
 import 'package:flutter_todo_hive/presentation/screens/home/components/home_app_bar.dart';
 import 'package:flutter_todo_hive/presentation/screens/home/components/home_content.dart';
 import 'package:flutter_todo_hive/presentation/screens/home/components/home_drawer.dart';
@@ -17,53 +20,97 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final List<int> test = [2];
-
   GlobalKey<SliderDrawerState> drawerKey = GlobalKey();
+
+  final TaskRepository taskRepository = getIt<TaskRepository>();
+
+  /// Checking Done Tasks
+  int checkDoneTask(List<Task> task) {
+    int i = 0;
+    for (Task doneTasks in task) {
+      if (doneTasks.isCompleted) {
+        i++;
+      }
+    }
+    return i;
+  }
+
+  /// Checking The Value Of the Circle Indicator
+  int valueOfTheIndicator(List<Task> tasks) {
+    if (tasks.isNotEmpty) {
+      return tasks.length;
+    } else {
+      return 3;
+    }
+  }
+
+  /// Delete Selected Task
+  void deleteTasks(List<Task> tasks) {
+    tasks.isEmpty
+        ? warningNoTask(
+            context: context,
+            onDismiss: () {
+              Navigator.of(context).pop();
+            },
+          )
+        : deleteAllTask(
+            context: context,
+            onCancel: () {
+              Navigator.of(context).pop();
+            },
+            onConfirm: () {
+              taskRepository.deleteAllTask();
+              Navigator.of(context).pop();
+            },
+          );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      floatingActionButton: const FAB(),
-      body: SliderDrawer(
-        key: drawerKey,
-        isDraggable: false,
-        animationDuration: 500,
+    return ValueListenableBuilder(
+      valueListenable: taskRepository.getTasksNotifier(),
+      builder: (context, value, child) {
+        var tasks = value;
+        log("tasks ${tasks.length}");
 
-        ///Drawer
-        slider: HomeDrawer(),
+        /// Sort Task List
+        tasks.sort(((a, b) => a.createdAtDate.compareTo(b.createdAtDate)));
+        return Scaffold(
+          backgroundColor: Colors.white,
+          floatingActionButton: const FAB(),
+          body: SliderDrawer(
+            key: drawerKey,
+            isDraggable: false,
+            animationDuration: 500,
 
-        /// Custom appbar
-        appBar: HomeAppBar(
-          drawerKey: drawerKey,
-          deleteAllClick: () {
-            deleteAllTask(
-              context: context,
-              onCancel: () {
-                Navigator.pop(context);
-              },
-              onConfirm: () {
-                Navigator.pop(context);
-              },
-            );
-            log("delete all tasks");
-          },
-        ),
+            ///Drawer
+            slider: HomeDrawer(),
 
-        ///Home Content
-        child: HomeContent(
-          datas: test,
-          onSwipeDismiss: (data) {
-            log("remove data $data");
-            setState(
-              () {
-                test.remove(data);
+            /// Custom appbar
+            appBar: HomeAppBar(
+              taskSize: valueOfTheIndicator(tasks),
+              taskDoneSize: checkDoneTask(tasks),
+              drawerKey: drawerKey,
+              deleteAllClick: () {
+                deleteTasks(tasks);
               },
-            );
-          },
-        ),
-      ),
+            ),
+
+            ///Home Content
+            child: HomeContent(
+              tasks: tasks,
+              onSwipeDismiss: (data) {
+                log("remove data $data");
+                // setState(
+                //   () {
+                //     test.remove(data);
+                //   },
+                // );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }

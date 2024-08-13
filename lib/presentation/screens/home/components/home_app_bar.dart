@@ -10,12 +10,15 @@ import '../../../utils/strings.dart';
 class HomeAppBar extends StatefulWidget {
   final GlobalKey<SliderDrawerState> drawerKey;
   final Function deleteAllClick;
+  final int taskSize;
+  final int taskDoneSize;
 
-  const HomeAppBar({
-    super.key,
-    required this.drawerKey,
-    required this.deleteAllClick,
-  });
+  const HomeAppBar(
+      {super.key,
+      required this.drawerKey,
+      required this.deleteAllClick,
+      required this.taskSize,
+      required this.taskDoneSize});
 
   @override
   State<HomeAppBar> createState() => _HomeAppBarState();
@@ -101,13 +104,14 @@ class _HomeAppBarState extends State<HomeAppBar>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ///Progress Indicator
-                const SizedBox(
+                SizedBox(
                   width: 50,
                   height: 50,
                   child: CircularProgressIndicator(
-                    value: 1 / 3,
+                    value: (widget.taskDoneSize).toDouble() /
+                        (widget.taskSize).toDouble(),
                     backgroundColor: Colors.grey,
-                    valueColor: AlwaysStoppedAnimation(
+                    valueColor: const AlwaysStoppedAnimation(
                       AppColors.primaryColor,
                     ),
                   ),
@@ -125,7 +129,7 @@ class _HomeAppBarState extends State<HomeAppBar>
                     ),
                     const Gap(3),
                     Text(
-                      "1 of 3 tasks",
+                      "${widget.taskDoneSize} of ${widget.taskSize} tasks",
                       style: textTheme.titleMedium,
                     )
                   ],

@@ -15,5 +15,5 @@ Future<void> configureDepedencies() async {
   // Registrasi dependency
   getIt.registerSingleton<HiveDataStore>(HiveDataStore(box: taskBox));
   getIt.registerSingleton<TaskRepository>(
-      TaskRepositoryImpl(getIt<HiveDataStore>()));
+      TaskRepositoryImpl(getIt<HiveDataStore>(), taskBox));
 }
