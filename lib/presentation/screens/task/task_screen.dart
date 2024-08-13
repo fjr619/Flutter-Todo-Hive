@@ -2,13 +2,19 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker_fork/flutter_cupertino_date_picker_fork.dart';
+import 'package:flutter_todo_hive/di/di.dart';
+import 'package:flutter_todo_hive/domain/model/task.dart';
+import 'package:flutter_todo_hive/domain/repository/task_repository.dart';
 import 'package:flutter_todo_hive/presentation/screens/task/components/date_time_selection.dart';
 import 'package:flutter_todo_hive/presentation/utils/colors.dart';
 import 'package:flutter_todo_hive/presentation/utils/strings.dart';
+import 'package:flutter_todo_hive/presentation/utils/util.dart';
 import 'package:intl/intl.dart';
 
 class TaskScreen extends StatefulWidget {
-  const TaskScreen({super.key});
+  const TaskScreen({super.key, this.task});
+
+  final Task? task;
 
   @override
   State<TaskScreen> createState() => _TaskScreenState();
@@ -19,10 +25,85 @@ class _TaskScreenState extends State<TaskScreen> {
   final TextEditingController descriptionTaskController =
       TextEditingController();
 
+  late DateTime selectedTime;
+  late DateTime selectedDate;
+
+  final TaskRepository taskRepository = getIt<TaskRepository>();
+
+  @override
+  void initState() {
+    super.initState();
+    titleTaskController.text = widget.task?.title ?? "";
+    descriptionTaskController.text = widget.task?.subTitle ?? "";
+
+    selectedDate = widget.task?.createdAtDate ?? DateTime.now();
+    selectedTime = widget.task?.createdAtTime ?? DateTime.now();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    titleTaskController.dispose();
+    descriptionTaskController.dispose();
+  }
+
+  /// If any Task Already exist return TRUE otherWise FALSE
+  bool isEditTask() {
+    return widget.task != null ? true : false;
+  }
+
+  /// Show Selected Time As String Format
+  String showTime() {
+    return DateFormat('hh:mm a').format(selectedTime).toString();
+  }
+
+  /// Show Selected Date As String Format
+  String showDate() {
+    return DateFormat.yMMMEd().format(selectedDate).toString();
+  }
+
+  /// Delete Selected Task
+  void deleteTask() {
+    if (widget.task != null) {
+      taskRepository.deleteTask(widget.task!).catchError((error) {
+        generalToast(context, error.toString());
+      });
+    }
+  }
+
+  /// Add or Update Task
+  void addUpdateTask() {
+    if (isEditTask()) {
+      widget.task?.title = titleTaskController.text;
+      widget.task?.subTitle = descriptionTaskController.text;
+      widget.task?.createdAtDate = selectedDate;
+      widget.task?.createdAtTime = selectedTime;
+
+      taskRepository.updateTask(widget.task!).then((_) {
+        Navigator.of(context).pop();
+      }).catchError((error) {
+        generalToast(context, error.toString());
+      });
+    } else {
+      Task task = Task(
+          id: "",
+          title: titleTaskController.text,
+          subTitle: descriptionTaskController.text,
+          createdAtTime: selectedTime,
+          createdAtDate: selectedDate,
+          isCompleted: false);
+      taskRepository.addTask(task).then((_) {
+        log("task : add succeed");
+        Navigator.of(context).pop();
+      }).catchError((error) {
+        generalToast(context, error.toString());
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
-
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
@@ -37,12 +118,12 @@ class _TaskScreenState extends State<TaskScreen> {
           ),
         ),
         body: Column(
-            children: [
-              _titleSection(textTheme),
-              _textfieldSection(textTheme, context),
-              _allButtonSection()
-            ],
-          ),
+          children: [
+            _titleSection(textTheme),
+            _textfieldSection(textTheme, context),
+            _allButtonSection()
+          ],
+        ),
       ),
     );
   }
@@ -62,7 +143,9 @@ class _TaskScreenState extends State<TaskScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: RichText(
               text: TextSpan(
-                text: AppStr.addNewTask,
+                text: widget.task == null
+                    ? AppStr.addNewTask
+                    : AppStr.updateCurrentTask,
                 style: textTheme.titleLarge,
                 children: const [
                   TextSpan(
@@ -119,8 +202,8 @@ class _TaskScreenState extends State<TaskScreen> {
                     ),
                   ),
                 ),
-                onFieldSubmitted: (value) {},
-                onChanged: (value) {},
+                // onFieldSubmitted: (value) {},
+                // onChanged: (value) {},
               ),
             ),
           ),
@@ -140,8 +223,8 @@ class _TaskScreenState extends State<TaskScreen> {
                   border: InputBorder.none,
                   hintText: AppStr.addNote,
                 ),
-                onFieldSubmitted: (value) {},
-                onChanged: (value) {},
+                // onFieldSubmitted: (value) {},
+                // onChanged: (value) {},
               ),
             ),
           ),
@@ -150,6 +233,7 @@ class _TaskScreenState extends State<TaskScreen> {
           DateTimeSelection(
             title: AppStr.timeString,
             margin: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+            data: showTime(),
             onTap: () {
               FocusManager.instance.primaryFocus?.unfocus();
               showModalBottomSheet(
@@ -157,10 +241,12 @@ class _TaskScreenState extends State<TaskScreen> {
                 builder: (context) => SizedBox(
                   height: 255,
                   child: TimePickerWidget(
-                    // initDateTime: ,
+                    initDateTime: selectedTime,
                     dateFormat: 'HH:mm',
                     onConfirm: (dateTime, selectedIndex) {
-                      log(DateFormat.Hm().format(dateTime));
+                      setState(() {
+                        selectedTime = dateTime;
+                      });
                     },
                   ),
                 ),
@@ -172,12 +258,16 @@ class _TaskScreenState extends State<TaskScreen> {
           DateTimeSelection(
             title: AppStr.dateString,
             margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+            data: showDate(),
             onTap: () {
               FocusManager.instance.primaryFocus?.unfocus();
               DatePicker.showDatePicker(
+                initialDateTime: selectedDate,
                 context,
                 onConfirm: (dateTime, selectedIndex) {
-                  log(DateFormat('dd-mm-yyyy').format(dateTime));
+                  setState(() {
+                    selectedDate = dateTime;
+                  });
                 },
               );
             },
@@ -193,36 +283,41 @@ class _TaskScreenState extends State<TaskScreen> {
         padding: const EdgeInsets.only(bottom: 16),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: isEditTask()
+              ? MainAxisAlignment.spaceEvenly
+              : MainAxisAlignment.center,
           children: [
             /// Delete Task Button
-            Container(
-              constraints: const BoxConstraints(
-                minWidth: 150,
-              ),
-              child: OutlinedButton.icon(
-                style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+            isEditTask()
+                ? Container(
+                    constraints: const BoxConstraints(
+                      minWidth: 150,
                     ),
-                    side: const BorderSide(
-                        width: 1, color: AppColors.primaryColor)),
-                icon: const Icon(
-                  Icons.close,
-                  color: AppColors.primaryColor,
-                ),
-                onPressed: () {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                  log('on delete');
-                },
-                label: const Text(
-                  AppStr.deleteTask,
-                  style: TextStyle(
-                    color: AppColors.primaryColor,
-                  ),
-                ),
-              ),
-            ),
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          side: const BorderSide(
+                              width: 1, color: AppColors.primaryColor)),
+                      icon: const Icon(
+                        Icons.close,
+                        color: AppColors.primaryColor,
+                      ),
+                      onPressed: () {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        log('on delete');
+                        deleteTask();
+                      },
+                      label: const Text(
+                        AppStr.deleteTask,
+                        style: TextStyle(
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                    ),
+                  )
+                : Container(),
 
             ///Add or update task
             Container(
@@ -230,17 +325,20 @@ class _TaskScreenState extends State<TaskScreen> {
                 minWidth: 150,
               ),
               child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      shadowColor: Colors.transparent,
-                      backgroundColor: AppColors.primaryColor,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15))),
-                  onPressed: () {
-                    FocusManager.instance.primaryFocus?.unfocus();
-                  },
-                  child: const Text(AppStr.addNewTask)),
+                style: ElevatedButton.styleFrom(
+                    elevation: 0,
+                    shadowColor: Colors.transparent,
+                    backgroundColor: AppColors.primaryColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15))),
+                onPressed: () {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  addUpdateTask();
+                },
+                child: Text(
+                    isEditTask() ? AppStr.updateTaskString : AppStr.addNewTask),
+              ),
             ),
           ],
         ),

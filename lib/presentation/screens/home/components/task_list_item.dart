@@ -1,13 +1,17 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_todo_hive/domain/model/task.dart';
+import 'package:flutter_todo_hive/presentation/screens/task/task_screen.dart';
 import 'package:flutter_todo_hive/presentation/utils/colors.dart';
+import 'package:intl/intl.dart';
 
 class TaskListItem extends StatelessWidget {
-  final int data;
+  final Task task;
 
   const TaskListItem({
-    required this.data,
+    required this.task,
     super.key,
   });
 
@@ -16,14 +20,10 @@ class TaskListItem extends StatelessWidget {
     return AnimatedContainer(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
-        color: AppColors.primaryColor.withOpacity(0.1),
+        color: task.isCompleted
+            ? const Color.fromARGB(154, 119, 144, 229)
+            : AppColors.primaryColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
-        // boxShadow: [
-        //   BoxShadow(
-        //       color: Colors.black.withOpacity(0.05),
-        //       offset: const Offset(0, 4),
-        //       blurRadius: 10),
-        // ],
       ),
       duration: const Duration(milliseconds: 300),
       child: Material(
@@ -32,7 +32,15 @@ class TaskListItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           onTap: () {
             /// Navigate to Task View to see Task Details
-            log("onclick item $data");
+            log("Navigate to Task View");
+            Navigator.push(
+              context,
+              CupertinoPageRoute(
+                builder: (context) => TaskScreen(
+                  task: task,
+                ),
+              ),
+            );
           },
           child: ListTile(
             /// Check Icon
@@ -40,33 +48,48 @@ class TaskListItem extends StatelessWidget {
               scale: 1.3,
               child: Checkbox(
                 shape: const CircleBorder(),
-                value: true,
+                side: WidgetStateBorderSide.resolveWith(
+                  (states) => BorderSide(
+                      width: 1.0,
+                      color: task.isCompleted
+                          ? AppColors.primaryColor
+                          : const Color.fromARGB(255, 164, 164, 164)),
+                ),
+                checkColor: Colors.white,
+                activeColor: AppColors.primaryColor,
+                value: task.isCompleted,
                 onChanged: (value) {
                   ///check and uncheck
-                  log("onChange $value index $data");
+                  log("onChange $value");
+                  // task.isCompleted = value ?? false;
                 },
               ),
             ),
 
             /// Task Title
             title: Text(
-              "Done text $data",
-              style: const TextStyle(
-                color: Colors.black,
+              task.title,
+              style: TextStyle(
+                color: task.isCompleted ? AppColors.primaryColor : Colors.black,
                 fontWeight: FontWeight.w500,
-                decoration: TextDecoration.lineThrough,
+                decoration:
+                    task.isCompleted ? TextDecoration.lineThrough : null,
               ),
             ),
 
             ///Task Description
-            subtitle: const Column(
+            subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Description",
+                  task.subTitle,
                   style: TextStyle(
-                    color: Colors.grey,
+                    color: task.isCompleted
+                        ? AppColors.primaryColor
+                        : const Color.fromARGB(255, 164, 164, 164),
                     fontWeight: FontWeight.w300,
+                    decoration:
+                        task.isCompleted ? TextDecoration.lineThrough : null,
                   ),
                 ),
 
@@ -74,17 +97,27 @@ class TaskListItem extends StatelessWidget {
                 Align(
                   alignment: Alignment.bottomRight,
                   child: Padding(
-                    padding: EdgeInsets.only(top: 10),
+                    padding: const EdgeInsets.only(top: 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          "Date",
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                          DateFormat('hh:mm a').format(task.createdAtTime),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: task.isCompleted
+                                ? Colors.white
+                                : const Color.fromARGB(255, 164, 164, 164),
+                          ),
                         ),
                         Text(
-                          "Subdate",
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                          DateFormat.yMMMEd().format(task.createdAtDate),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: task.isCompleted
+                                ? Colors.white
+                                : const Color.fromARGB(255, 164, 164, 164),
+                          ),
                         )
                       ],
                     ),

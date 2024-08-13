@@ -1,5 +1,6 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_todo_hive/domain/model/task.dart';
 import 'package:gap/gap.dart';
 import 'package:lottie/lottie.dart';
 
@@ -93,7 +94,13 @@ class HomeContent extends StatelessWidget {
           },
           key: UniqueKey(),
           child: TaskListItem(
-            data: datas[index],
+            task: Task(
+                id: "2",
+                title: "Home Task",
+                subTitle: "Cleaning the room",
+                createdAtTime: DateTime.now(),
+                createdAtDate: DateTime.now(),
+                isCompleted: false),
           ),
         );
       },

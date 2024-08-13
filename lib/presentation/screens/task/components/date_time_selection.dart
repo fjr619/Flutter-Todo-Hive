@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 
 class DateTimeSelection extends StatelessWidget {
   const DateTimeSelection(
-      {super.key, required this.title, required this.onTap, required this.margin});
+      {super.key, required this.title, required this.data, required this.onTap, required this.margin});
 
   final String title;
+  final String data;
   final VoidCallback onTap;
   final EdgeInsetsGeometry margin;
 
@@ -35,34 +36,23 @@ class DateTimeSelection extends StatelessWidget {
           ),
           Container(
             margin: const EdgeInsets.only(right: 10),
-            width: 80,
+            // width: 80,
             height: 35,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: Colors.grey.shade100),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(10),
-                onTap: onTap,
-                // onTap: () {
-                // showModalBottomSheet(
-                //   context: context,
-                //   builder: (context) => SizedBox(
-                //     height: 255,
-                //     child: TimePickerWidget(
-                //       // initDateTime: ,
-                //       onConfirm: (dateTime, selectedIndex) {
-                //         log(DateFormat.Hms().format(dateTime));
-                //       },
-                //     ),
-                //   ),
-                // );
-                // },
-                child: Center(
-                  child: Text(
-                    'asdad',
-                    style: textTheme.headlineSmall?.copyWith(fontSize: 12),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(10),
+                  onTap: onTap,
+                  child: Center(
+                    child: Text(
+                      data,
+                      style: textTheme.headlineSmall?.copyWith(fontSize: 12),
+                    ),
                   ),
                 ),
               ),

@@ -19,7 +19,7 @@ class FAB extends StatelessWidget {
         Navigator.push(
           context,
           CupertinoPageRoute(
-            builder: (context) => const TaskScreen(),
+            builder: (context) => TaskScreen(),
           ),
         );
       },

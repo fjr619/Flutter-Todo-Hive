@@ -27,6 +27,17 @@ nothingEnterOnUpdateTaskMode(context) {
   );
 }
 
+generalToast(context, String message) {
+  return FToast.toast(
+    context,
+    msg: AppStr.oopsMsg,
+    subMsg: message,
+    corner: 20.0,
+    duration: 1000,
+    padding: const EdgeInsets.all(20),
+  );
+}
+
 /// No task Warning Dialog
 dynamic warningNoTask(
     {required BuildContext context, required Function() onDismiss}) {

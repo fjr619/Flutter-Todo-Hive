@@ -1,4 +1,5 @@
 import 'package:flutter/src/foundation/change_notifier.dart';
+import 'package:flutter_todo_hive/data/local/entities/task_entity.dart';
 import 'package:flutter_todo_hive/data/local/hive_data_store.dart';
 import 'package:flutter_todo_hive/data/mapper/task_mapper.dart';
 import 'package:flutter_todo_hive/domain/model/task.dart';
@@ -12,7 +13,12 @@ class TaskRepositoryImpl implements TaskRepository {
 
   @override
   Future<void> addTask(Task task) async {
-    await _hiveDataStore.addTask(task: task.toEntity());
+    TaskEntity taskEntity = TaskEntity.create(
+        title: task.title,
+        subTitle: task.subTitle,
+        createdAtDate: task.createdAtDate,
+        createdAtTime: task.createdAtTime);
+    await _hiveDataStore.addTask(task: taskEntity);
   }
 
   @override
