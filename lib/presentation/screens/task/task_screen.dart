@@ -36,15 +36,13 @@ class _TaskScreenState extends State<TaskScreen> {
             icon: const Icon(Icons.arrow_back_ios_new_rounded),
           ),
         ),
-        body: Expanded(
-          child: Column(
+        body: Column(
             children: [
               _titleSection(textTheme),
               _textfieldSection(textTheme, context),
               _allButtonSection()
             ],
           ),
-        ),
       ),
     );
   }
