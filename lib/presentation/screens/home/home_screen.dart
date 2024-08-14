@@ -40,12 +40,12 @@ class _HomeScreenState extends State<HomeScreen> {
     if (tasks.isNotEmpty) {
       return tasks.length;
     } else {
-      return 3;
+      return 0;
     }
   }
 
-  /// Delete Selected Task
-  void deleteTasks(List<Task> tasks) {
+  /// Delete All Task
+  void deleteAllTasks(List<Task> tasks) {
     tasks.isEmpty
         ? warningNoTask(
             context: context,
@@ -63,6 +63,13 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.of(context).pop();
             },
           );
+  }
+
+  /// Delete Selected Task
+  void deleteTask(Task task) {
+    taskRepository.deleteTask(task).catchError((error) {
+      generalToast(context, error.toString());
+    });
   }
 
   @override
@@ -92,20 +99,18 @@ class _HomeScreenState extends State<HomeScreen> {
               taskDoneSize: checkDoneTask(tasks),
               drawerKey: drawerKey,
               deleteAllClick: () {
-                deleteTasks(tasks);
+                deleteAllTasks(tasks);
               },
             ),
 
             ///Home Content
             child: HomeContent(
               tasks: tasks,
-              onSwipeDismiss: (data) {
-                log("remove data $data");
-                // setState(
-                //   () {
-                //     test.remove(data);
-                //   },
-                // );
+              onUpdateTaskCompleted: (task) {
+                taskRepository.updateTask(task);
+              },
+              onSwipeDismiss: (task) {
+                deleteTask(task);
               },
             ),
           ),

@@ -89,7 +89,6 @@ class _HomeAppBarState extends State<HomeAppBar>
                   padding: const EdgeInsets.only(left: 8),
                   child: IconButton(
                     onPressed: () {
-                      //TODO: WE WILL REMOVE ALL THE TASK FROM DB
                       widget.deleteAllClick();
                     },
                     icon: const Icon(
@@ -104,18 +103,37 @@ class _HomeAppBarState extends State<HomeAppBar>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ///Progress Indicator
-                SizedBox(
-                  width: 50,
-                  height: 50,
-                  child: CircularProgressIndicator(
-                    value: (widget.taskDoneSize).toDouble() /
-                        (widget.taskSize).toDouble(),
-                    backgroundColor: Colors.grey,
-                    valueColor: const AlwaysStoppedAnimation(
-                      AppColors.primaryColor,
-                    ),
+                Container(
+                  child: Builder(
+                    builder: (context) {
+                      if (widget.taskSize > 0) {
+                        return SizedBox(
+                          width: 50,
+                          height: 50,
+                          //https://stackoverflow.com/a/61757371
+                          child: TweenAnimationBuilder<double>(
+                            tween: Tween<double>(
+                                begin: 0.0,
+                                end: (widget.taskDoneSize).toDouble() /
+                                    (widget.taskSize).toDouble()),
+                            duration: const Duration(milliseconds: 500),
+                            builder: (context, value, child) {
+                              return CircularProgressIndicator(
+                                value: value,
+                                backgroundColor: Colors.grey,
+                                valueColor: const AlwaysStoppedAnimation(
+                                  AppColors.primaryColor,
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      }
+                      return Container();
+                    },
                   ),
                 ),
+
                 const Gap(25),
 
                 /// Top Level Task Info
@@ -128,9 +146,18 @@ class _HomeAppBarState extends State<HomeAppBar>
                       style: textTheme.displayMedium,
                     ),
                     const Gap(3),
-                    Text(
-                      "${widget.taskDoneSize} of ${widget.taskSize} tasks",
-                      style: textTheme.titleMedium,
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
+                      transitionBuilder:
+                          (Widget child, Animation<double> animation) {
+                        return FadeTransition(opacity: animation, child: child);
+                      },
+                      child: Text(
+                        "${widget.taskDoneSize} of ${widget.taskSize} tasks",
+                        key: ValueKey(
+                            "${widget.taskDoneSize} of ${widget.taskSize} tasks"),
+                        style: textTheme.titleMedium,
+                      ),
                     )
                   ],
                 ),

@@ -9,10 +9,12 @@ import 'package:intl/intl.dart';
 
 class TaskListItem extends StatelessWidget {
   final Task task;
+  final Function(bool newValue) onUpdateCheckbox;
 
   const TaskListItem({
     required this.task,
     super.key,
+    required this.onUpdateCheckbox
   });
 
   @override
@@ -61,6 +63,7 @@ class TaskListItem extends StatelessWidget {
                 onChanged: (value) {
                   ///check and uncheck
                   log("onChange $value");
+                  onUpdateCheckbox(value ?? false);
                   // task.isCompleted = value ?? false;
                 },
               ),

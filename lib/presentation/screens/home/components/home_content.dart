@@ -10,9 +10,13 @@ import 'task_list_item.dart';
 class HomeContent extends StatelessWidget {
   final List<Task> tasks;
   final Function(Task task) onSwipeDismiss;
+  final Function(Task task) onUpdateTaskCompleted;
 
   const HomeContent(
-      {required this.tasks, required this.onSwipeDismiss, super.key});
+      {required this.tasks,
+      required this.onSwipeDismiss,
+      super.key,
+      required this.onUpdateTaskCompleted});
 
   @override
   Widget build(BuildContext context) {
@@ -92,9 +96,14 @@ class HomeContent extends StatelessWidget {
           onDismissed: (direction) {
             onSwipeDismiss(tasks[index]);
           },
-          key: UniqueKey(),
+          key: Key(tasks[index].id),
           child: TaskListItem(
             task: tasks[index],
+            onUpdateCheckbox: (newValue) {
+              var task = tasks[index];
+              task.isCompleted = newValue;
+              onUpdateTaskCompleted(task);
+            },
           ),
         );
       },
