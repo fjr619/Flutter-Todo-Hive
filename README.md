@@ -1,6 +1,6 @@
 # flutter_todo_hive
 
-This is a Flutter application for creating a simple To-Do app using the Hive local database. The app follows the principles of Clean Architecture, ensuring a well-structured, maintainable, and scalable codebase. Hive is used as the local storage solution for fast and lightweight data management.
+This is a Flutter application for creating a simple To-Do app using the Hive local database. The app follows the principles of Clean Architecture, ensuring a well-structured and maintainable codebase. It uses Provider for state management, and Hive is implemented as the local storage solution for fast and lightweight data handling.
 
 ## Screenshoot
 
