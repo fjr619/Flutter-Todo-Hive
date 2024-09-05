@@ -1,16 +1,22 @@
 # flutter_todo_hive
 
-A new Flutter project.
+This is a Flutter application for creating a simple To-Do app using the Hive local database. The app follows the principles of Clean Architecture, ensuring a well-structured, maintainable, and scalable codebase. Hive is used as the local storage solution for fast and lightweight data management.
 
-## Getting Started
+## Screenshoot
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<table>
+  <tr>
+    <th>Login</th>
+    <th>Register</th>
+    <th>Home</th>
+        <th>Post</th>
+     <th>Post</th>
+  </tr>
+  <tr>
+    <td><img src="screenshoot/1.%20home.png" height="20%"/></td>
+    <td><img src="screenshoot/2.%20add.png" height="20%"/></td>
+    <td><img src="screenshoot/3.%20complete.png" height="20%"/></td>
+    <td><img src="screenshoot/4.%20remove%20all.png" height="20%"/></td>
+        <td><img src="screenshoot/5.%20empty.png" height="20%"/></td>
+  </tr>
+</table>
